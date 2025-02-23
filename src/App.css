@@ -1,0 +1,55 @@
+.app {
+  background-color: rgb(255, 255, 255);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+}
+
+.app #mainMap {
+  width: 500px !important;
+  height: 400px !important;
+  position: absolute !important;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.app .instructions {
+  width: 320px !important;
+  height: fit-content;
+  position: absolute;
+  right: 30px;
+  top: 90px;
+  width: 300px;
+  border: 2px solid black;
+  padding: 10px;
+  border-radius: 10px;
+}
+.app .instructions h2 {
+  font-size: 30px;
+}
+.app .instructions p {
+  margin-top: 10px;
+}
+
+.app .instructions ul {
+  width: 100%;
+}
+
+.app .instructions li {
+  margin-top: 5px;
+  font-size: 15px;
+  margin-left: 15px;
+}
+.app #selectOptions {
+  width: 200px;
+  padding: 8px;
+  position: absolute;
+  left: 60px;
+  top: 90px;
+  border-radius: 10px;
+  border: 2px solid black;
+}
