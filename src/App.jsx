@@ -114,8 +114,8 @@ const App = () => {
       <Map
         id="mainMap"
         initialViewState={{
-          longitude: 80.2193408,
-          latitude: 13.0678784,
+          longitude: 79.1205,
+          latitude: 12.8802,
           zoom: 15,
         }}
         mapStyle="https://tiles.openfreemap.org/styles/liberty"
