@@ -17,6 +17,8 @@ const App = () => {
     duration: 0,
   });
 
+  const [liveRouting, setLiveRouting] = useState(false);
+
   useEffect(() => {
     let watchId;
     if (navigator.geolocation) {
@@ -44,18 +46,17 @@ const App = () => {
       }
     };
   }, []);
-  useEffect(() => {
-    if (userLocation) {
-      console.log("Updated location:", userLocation);
-    }
-  }, [userLocation]);
+
   useEffect(() => {
     const getRoute = async () => {
       const apiKey = "5b3ce3597851110001cf62487bd10ff850434c58ac7c2d99a5bf9ed1";
       const url = `https://api.openrouteservice.org/v2/directions/${profile}/geojson`;
 
       const body = {
-        coordinates: [startCoordinate, endCoordinate],
+        coordinates: [
+          liveRouting ? userLocation : startCoordinate,
+          endCoordinate,
+        ],
       };
       try {
         const response = await axios.post(url, body, {
@@ -88,17 +89,19 @@ const App = () => {
 
   const handleMapClick = (e) => {
     const clickedLngLat = e.lngLat;
-    if (!type) {
-      setStartCoordinate([clickedLngLat.lng, clickedLngLat.lat]);
-      setType("start");
-    } else if (type === "start") {
+    if (!liveRouting) {
+      if (!type) {
+        setStartCoordinate([clickedLngLat.lng, clickedLngLat.lat]);
+        setType("start");
+      } else if (type === "start") {
+        setEndCoordinate([clickedLngLat.lng, clickedLngLat.lat]);
+        setType("end");
+      }
+    } else if (liveRouting) {
       setEndCoordinate([clickedLngLat.lng, clickedLngLat.lat]);
-      setType("end");
     }
   };
   let formatTime = (tsec) => {
-    console.log(tsec, "secondsMain");
-
     let hours = Math.floor(tsec / 3600);
     let minutes = Math.floor((tsec - hours * 3600) / 60);
     let seconds = Math.floor(tsec - hours * 3600 - minutes * 60);
@@ -107,6 +110,9 @@ const App = () => {
     return `${hours.toString(10).padStart(2, "0")}hrs ${minutes
       .toString(10)
       .padStart(2, "0")}min ${seconds.toString(10).padStart(2, "0")}sec`;
+  };
+  let toggleLiveRouting = () => {
+    setLiveRouting((prev) => !prev);
   };
   // 80.2193408, 13.0678784
   return (
@@ -130,7 +136,7 @@ const App = () => {
                 "line-color": "#000000",
                 "line-width": 5,
                 "line-dasharray":
-                  profile === "foot-walking" ? [0.3, 0.5] : [1, 0],
+                  profile === "foot-walking" ? [0.2, 0.2] : [1, 0],
               }}
             />
           </Source>
@@ -179,7 +185,7 @@ const App = () => {
             />
           </Marker>
         )}
-        {userLocation && userLocation?.length === 2 && (
+        {userLocation && userLocation?.length === 2 && liveRouting && (
           <Marker
             longitude={userLocation?.[0]}
             latitude={userLocation?.[1]}
@@ -225,6 +231,9 @@ const App = () => {
         <option value="cycling-electric">⚡ Electric Bike</option>
         <option value="foot-walking">🚶 Walking</option>
       </select>
+      <button id="liveRButt" onClick={toggleLiveRouting}>
+        {liveRouting ? "Start Live Routing" : "Stop Live Routing"}
+      </button>
     </div>
   );
 };
