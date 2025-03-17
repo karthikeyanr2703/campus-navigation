@@ -82,10 +82,13 @@ const App = () => {
         console.error("Error fetching route:", error);
       }
     };
-    if (startCoordinate && endCoordinate) {
+    if (
+      (startCoordinate && endCoordinate) ||
+      (liveRouting && userLocation && endCoordinate)
+    ) {
       getRoute();
     }
-  }, [endCoordinate, startCoordinate, profile]);
+  }, [endCoordinate, startCoordinate, profile, userLocation, liveRouting]);
 
   const handleMapClick = (e) => {
     const clickedLngLat = e.lngLat;
@@ -112,6 +115,11 @@ const App = () => {
       .padStart(2, "0")}min ${seconds.toString(10).padStart(2, "0")}sec`;
   };
   let toggleLiveRouting = () => {
+    if (!liveRouting) {
+      setStartCoordinate(null);
+      setEndCoordinate(null);
+      setRouteData(null);
+    }
     setLiveRouting((prev) => !prev);
   };
   // 80.2193408, 13.0678784
@@ -232,7 +240,7 @@ const App = () => {
         <option value="foot-walking">🚶 Walking</option>
       </select>
       <button id="liveRButt" onClick={toggleLiveRouting}>
-        {liveRouting ? "Start Live Routing" : "Stop Live Routing"}
+        {liveRouting ? "Stop Live Routing" : "Start Live Routing"}
       </button>
     </div>
   );
