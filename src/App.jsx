@@ -115,12 +115,16 @@ const App = () => {
       .padStart(2, "0")}min ${seconds.toString(10).padStart(2, "0")}sec`;
   };
   let toggleLiveRouting = () => {
-    if (!liveRouting) {
-      setStartCoordinate(null);
-      setEndCoordinate(null);
-      setRouteData(null);
-    }
+    setStartCoordinate(null);
+    setEndCoordinate(null);
+    setRouteData(null);
+    setType(null);
+    setTurnByTurnInstructions([]);
     setLiveRouting((prev) => !prev);
+    setDisDur({
+      distance: 0,
+      duration: 0,
+    });
   };
   // 80.2193408, 13.0678784
   return (
@@ -220,13 +224,10 @@ const App = () => {
           <p>Duration: {formatTime(disDur.duration)}</p>
         )}
         <ul>
-          {turnByTurnInstructions.length > 0 ? (
+          {turnByTurnInstructions.length > 0 &&
             turnByTurnInstructions.map((instruction, index) => (
               <li key={index}>{instruction}</li>
-            ))
-          ) : (
-            <li>Loading instructions...</li>
-          )}
+            ))}
         </ul>
       </div>
       <select
