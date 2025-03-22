@@ -2,7 +2,8 @@ import { Layer, Map, Marker, Source } from "@vis.gl/react-maplibre";
 import "maplibre-gl/dist/maplibre-gl.css"; // See notes below
 import "./App.css";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import _ from "lodash";
 
 const App = () => {
   const [routeData, setRouteData] = useState(null);
@@ -32,7 +33,7 @@ const App = () => {
         },
         {
           enableHighAccuracy: true,
-          timeout: 15000,
+          timeout: 60000,
           maximumAge: 0,
         }
       );
@@ -46,9 +47,8 @@ const App = () => {
       }
     };
   }, []);
-
-  useEffect(() => {
-    const getRoute = async () => {
+  const getRouteThrottled = useCallback(
+    _.throttle(async () => {
       const apiKey = "5b3ce3597851110001cf62487bd10ff850434c58ac7c2d99a5bf9ed1";
       const url = `https://api.openrouteservice.org/v2/directions/${profile}/geojson`;
 
@@ -66,27 +66,60 @@ const App = () => {
           },
         });
         let route = response.data;
-        console.log(route);
         const { distance, duration } = route.features[0].properties.segments[0];
         setRouteData(route);
-        setDisDur({
-          distance,
-          duration,
-        });
-        const instructions = [];
-        route.features[0].properties.segments[0].steps.forEach((step) => {
-          instructions.push(step.instruction);
-        });
+        setDisDur({ distance, duration });
+        const instructions = route.features[0].properties.segments[0].steps.map(
+          (step) => step.instruction
+        );
         setTurnByTurnInstructions(instructions);
       } catch (error) {
-        console.error("Error fetching route:", error);
+        console.log(error.message);
       }
-    };
+    }, 1000),
+    [userLocation, startCoordinate, endCoordinate, liveRouting, profile]
+  );
+  useEffect(() => {
+    // const getRoute = async () => {
+    //   const apiKey = "5b3ce3597851110001cf62487bd10ff850434c58ac7c2d99a5bf9ed1";
+    //   const url = `https://api.openrouteservice.org/v2/directions/${profile}/geojson`;
+
+    //   const body = {
+    //     coordinates: [
+    //       liveRouting ? userLocation : startCoordinate,
+    //       endCoordinate,
+    //     ],
+    //   };
+    //   try {
+    //     const response = await axios.post(url, body, {
+    //       headers: {
+    //         Authorization: apiKey,
+    //         "Content-Type": "application/json",
+    //       },
+    //     });
+    //     let route = response.data;
+    //     console.log(route);
+    //     const { distance, duration } = route.features[0].properties.segments[0];
+    //     setRouteData(route);
+    //     setDisDur({
+    //       distance,
+    //       duration,
+    //     });
+    //     const instructions = [];
+    //     route.features[0].properties.segments[0].steps.forEach((step) => {
+    //       instructions.push(step.instruction);
+    //     });
+    //     setTurnByTurnInstructions(instructions);
+    //   } catch (error) {
+    //     console.error("Error fetching route:", error);
+    //   }
+    // };
+
     if (
       (startCoordinate && endCoordinate) ||
       (liveRouting && userLocation && endCoordinate)
     ) {
-      getRoute();
+      getRouteThrottled();
     }
   }, [endCoordinate, startCoordinate, profile, userLocation, liveRouting]);
 
@@ -108,7 +141,7 @@ const App = () => {
     let hours = Math.floor(tsec / 3600);
     let minutes = Math.floor((tsec - hours * 3600) / 60);
     let seconds = Math.floor(tsec - hours * 3600 - minutes * 60);
-    console.log(hours, minutes, seconds);
+    // console.log(hours, minutes, seconds);
 
     return `${hours.toString(10).padStart(2, "0")}hrs ${minutes
       .toString(10)
