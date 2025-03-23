@@ -36,12 +36,12 @@ const App = () => {
           setUserLocation([longitude, latitude]);
         },
         (error) => {
-          console.log(error.message,"😁");
+          console.log(error.message, "😁");
         },
         {
           enableHighAccuracy: true,
           timeout: 60000,
-          maximumAge: 0,
+          maximumAge: 3000,
         }
       );
     } else {
@@ -86,7 +86,7 @@ const App = () => {
         console.log("error", "🔥");
         console.log(error.message, "👌");
       }
-    }, 2200),
+    }, 5200),
     [userLocation, startCoordinate, endCoordinate, liveRouting, profile]
   );
   useEffect(() => {
