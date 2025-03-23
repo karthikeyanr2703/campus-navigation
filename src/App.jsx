@@ -19,7 +19,6 @@ const App = () => {
   const [turnByTurnInstructions, setTurnByTurnInstructions] = useState([]);
   const [profile, setProfile] = useState("driving-car");
   const [userLocation, setUserLocation] = useState(null);
-  const [heading, setHeading] = useState(null);
   const [disDur, setDisDur] = useState({
     distance: 0,
     duration: 0,
@@ -32,11 +31,7 @@ const App = () => {
     if (navigator.geolocation) {
       watchId = navigator.geolocation.watchPosition(
         (position) => {
-          const { longitude, latitude, heading: head } = position.coords;
-          if (head !== null) {
-            setHeading(head);
-          }
-
+          const { longitude, latitude } = position.coords;
           setUserLocation([longitude, latitude]);
         },
         (error) => {
@@ -97,7 +92,8 @@ const App = () => {
       getRouteThrottled();
     }
     if (liveRouting && userLocation && endCoordinate) {
-      getRouteThrottled.flush();
+      console.log(liveRouting, userLocation, endCoordinate);
+      getRouteThrottled();
     }
   }, [
     endCoordinate,
@@ -229,11 +225,8 @@ const App = () => {
                 height: "20px",
                 borderRadius: "50%",
                 border: "3px solid white",
-                transform: `rotate(${heading}deg)`,
               }}
-            >
-              ➡️
-            </div>
+            />
           </Marker>
         )}
       </Map>
