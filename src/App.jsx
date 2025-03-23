@@ -24,12 +24,11 @@ const App = () => {
     distance: 0,
     duration: 0,
   });
-
   const [liveRouting, setLiveRouting] = useState(false);
 
   useEffect(() => {
     let watchId;
-    if (navigator.geolocation) {
+    if (navigator.geolocation && liveRouting) {
       watchId = navigator.geolocation.watchPosition(
         (position) => {
           const { longitude, latitude } = position.coords;
@@ -53,7 +52,7 @@ const App = () => {
         navigator.geolocation.clearWatch(watchId);
       }
     };
-  }, []);
+  }, [liveRouting]);
   const getRouteThrottled = useCallback(
     _.throttle(async () => {
       const apiKey = "5b3ce3597851110001cf62487bd10ff850434c58ac7c2d99a5bf9ed1";
