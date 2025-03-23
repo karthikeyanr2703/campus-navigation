@@ -40,7 +40,7 @@ const App = () => {
         {
           enableHighAccuracy: true,
           timeout: 60000,
-          maximumAge: 4000,
+          maximumAge: 3900,
         }
       );
     } else {
@@ -85,8 +85,8 @@ const App = () => {
         console.log("error", "🔥");
         console.log(error.message, "👌");
       }
-    }, 5200),
-    [userLocation, startCoordinate, endCoordinate, liveRouting, profile]
+    }, 4200),
+    []
   );
   useEffect(() => {
     if (startCoordinate && endCoordinate) {
