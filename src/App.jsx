@@ -48,7 +48,7 @@ const App = () => {
     }
 
     return () => {
-      if (watchId) {
+      if (watchId && typeof watchId === "number") {
         navigator.geolocation.clearWatch(watchId);
       }
     };
@@ -95,14 +95,7 @@ const App = () => {
     if (liveRouting && userLocation && endCoordinate) {
       getRouteThrottled();
     }
-  }, [
-    endCoordinate,
-    startCoordinate,
-    profile,
-    userLocation,
-    liveRouting,
-    getRouteThrottled,
-  ]);
+  }, [endCoordinate, startCoordinate, profile, userLocation, liveRouting]);
 
   const handleMapClick = (e) => {
     const clickedLngLat = e.lngLat;
