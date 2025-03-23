@@ -1,4 +1,5 @@
 import {
+  GeolocateControl,
   Layer,
   Map,
   Marker,
@@ -84,7 +85,7 @@ const App = () => {
       } catch (error) {
         console.log(error.message);
       }
-    }, 800),
+    }, 2200),
     [userLocation, startCoordinate, endCoordinate, liveRouting, profile]
   );
   useEffect(() => {
@@ -92,7 +93,6 @@ const App = () => {
       getRouteThrottled();
     }
     if (liveRouting && userLocation && endCoordinate) {
-      console.log(liveRouting, userLocation, endCoordinate);
       getRouteThrottled();
     }
   }, [
@@ -122,7 +122,6 @@ const App = () => {
     let hours = Math.floor(tsec / 3600);
     let minutes = Math.floor((tsec - hours * 3600) / 60);
     let seconds = Math.floor(tsec - hours * 3600 - minutes * 60);
-    // console.log(hours, minutes, seconds);
 
     return `${hours.toString(10).padStart(2, "0")}hrs ${minutes
       .toString(10)
@@ -153,6 +152,16 @@ const App = () => {
         mapStyle="https://tiles.openfreemap.org/styles/liberty"
         onClick={handleMapClick}
       >
+        <GeolocateControl
+          positionOptions={{
+            enableHighAccuracy: true,
+            timeout: 60000,
+          }}
+          position="top-left"
+          showAccuracyCircle={false}
+          showUserLocation={false}
+          trackUserLocation={true}
+        />
         <NavigationControl showCompass={true} />
         {routeData && (
           <Source id="route" type="geojson" data={routeData}>
