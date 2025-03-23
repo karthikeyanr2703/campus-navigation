@@ -1,4 +1,10 @@
-import { Layer, Map, Marker, Source } from "@vis.gl/react-maplibre";
+import {
+  Layer,
+  Map,
+  Marker,
+  NavigationControl,
+  Source,
+} from "@vis.gl/react-maplibre";
 import "maplibre-gl/dist/maplibre-gl.css"; // See notes below
 import "./App.css";
 import axios from "axios";
@@ -13,6 +19,7 @@ const App = () => {
   const [turnByTurnInstructions, setTurnByTurnInstructions] = useState([]);
   const [profile, setProfile] = useState("driving-car");
   const [userLocation, setUserLocation] = useState(null);
+  const [heading, setHeading] = useState(null);
   const [disDur, setDisDur] = useState({
     distance: 0,
     duration: 0,
@@ -25,7 +32,11 @@ const App = () => {
     if (navigator.geolocation) {
       watchId = navigator.geolocation.watchPosition(
         (position) => {
-          const { longitude, latitude } = position.coords;
+          const { longitude, latitude, heading: head } = position.coords;
+          if (head !== null) {
+            setHeading(head);
+          }
+
           setUserLocation([longitude, latitude]);
         },
         (error) => {
@@ -66,6 +77,8 @@ const App = () => {
           },
         });
         let route = response.data;
+        console.log(route);
+
         const { distance, duration } = route.features[0].properties.segments[0];
         setRouteData(route);
         setDisDur({ distance, duration });
@@ -76,52 +89,24 @@ const App = () => {
       } catch (error) {
         console.log(error.message);
       }
-    }, 1000),
+    }, 800),
     [userLocation, startCoordinate, endCoordinate, liveRouting, profile]
   );
   useEffect(() => {
-    // const getRoute = async () => {
-    //   const apiKey = "5b3ce3597851110001cf62487bd10ff850434c58ac7c2d99a5bf9ed1";
-    //   const url = `https://api.openrouteservice.org/v2/directions/${profile}/geojson`;
-
-    //   const body = {
-    //     coordinates: [
-    //       liveRouting ? userLocation : startCoordinate,
-    //       endCoordinate,
-    //     ],
-    //   };
-    //   try {
-    //     const response = await axios.post(url, body, {
-    //       headers: {
-    //         Authorization: apiKey,
-    //         "Content-Type": "application/json",
-    //       },
-    //     });
-    //     let route = response.data;
-    //     console.log(route);
-    //     const { distance, duration } = route.features[0].properties.segments[0];
-    //     setRouteData(route);
-    //     setDisDur({
-    //       distance,
-    //       duration,
-    //     });
-    //     const instructions = [];
-    //     route.features[0].properties.segments[0].steps.forEach((step) => {
-    //       instructions.push(step.instruction);
-    //     });
-    //     setTurnByTurnInstructions(instructions);
-    //   } catch (error) {
-    //     console.error("Error fetching route:", error);
-    //   }
-    // };
-
-    if (
-      (startCoordinate && endCoordinate) ||
-      (liveRouting && userLocation && endCoordinate)
-    ) {
+    if (startCoordinate && endCoordinate) {
       getRouteThrottled();
     }
-  }, [endCoordinate, startCoordinate, profile, userLocation, liveRouting]);
+    if (liveRouting && userLocation && endCoordinate) {
+      getRouteThrottled.flush();
+    }
+  }, [
+    endCoordinate,
+    startCoordinate,
+    profile,
+    userLocation,
+    liveRouting,
+    getRouteThrottled,
+  ]);
 
   const handleMapClick = (e) => {
     const clickedLngLat = e.lngLat;
@@ -159,7 +144,7 @@ const App = () => {
       duration: 0,
     });
   };
-  // 80.2193408, 13.0678784
+
   return (
     <div className="app">
       <Map
@@ -172,6 +157,7 @@ const App = () => {
         mapStyle="https://tiles.openfreemap.org/styles/liberty"
         onClick={handleMapClick}
       >
+        <NavigationControl showCompass={true} />
         {routeData && (
           <Source id="route" type="geojson" data={routeData}>
             <Layer
@@ -243,8 +229,11 @@ const App = () => {
                 height: "20px",
                 borderRadius: "50%",
                 border: "3px solid white",
+                transform: `rotate(${heading}deg)`,
               }}
-            />
+            >
+              ➡️
+            </div>
           </Marker>
         )}
       </Map>
