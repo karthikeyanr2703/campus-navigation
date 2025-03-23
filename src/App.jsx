@@ -36,7 +36,7 @@ const App = () => {
           setUserLocation([longitude, latitude]);
         },
         (error) => {
-          console.log(error);
+          console.log(error.message,"😁");
         },
         {
           enableHighAccuracy: true,
@@ -83,7 +83,8 @@ const App = () => {
         );
         setTurnByTurnInstructions(instructions);
       } catch (error) {
-        console.log(error.message);
+        console.log("error", "🔥");
+        console.log(error.message, "👌");
       }
     }, 2200),
     [userLocation, startCoordinate, endCoordinate, liveRouting, profile]
