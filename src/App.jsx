@@ -40,7 +40,7 @@ const App = () => {
         {
           enableHighAccuracy: true,
           timeout: 60000,
-          maximumAge: 3000,
+          maximumAge: 4000,
         }
       );
     } else {
