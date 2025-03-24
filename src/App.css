@@ -20,13 +20,15 @@
 
 .app .instructions {
   width: 320px !important;
-  height: fit-content;
   position: absolute;
   right: 30px;
   top: 90px;
   width: 300px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   padding: 10px;
+  background-color: white;
+  height: 300px;
+  overflow-y: auto;
 }
 .app .instructions h2 {
   font-size: 30px;
@@ -45,16 +47,16 @@
   margin-left: 15px;
 }
 .app #selectOptions {
-  width: 200px;
+  width: 300px;
   padding: 8px;
   position: absolute;
-  left: 60px;
+  left: 50px;
   top: 90px;
   border-radius: 10px;
   border: 2px solid black;
 }
 #liveRButt {
-  position: absolute!important;
+  position: absolute !important;
   left: 5px;
   bottom: 5px;
   padding: 8px 5px;

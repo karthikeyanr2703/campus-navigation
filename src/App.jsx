@@ -237,20 +237,22 @@ const App = () => {
           </Marker>
         )}
       </Map>
-      <div className="instructions">
-        <h2>Details</h2>
+      {turnByTurnInstructions.length > 0 && (
+        <div className="instructions">
+          <h2>Details</h2>
 
-        {disDur.distance !== 0 && <p>Distance: {disDur.distance} meters</p>}
-        {disDur.duration !== 0 && (
-          <p>Duration: {formatTime(disDur.duration)}</p>
-        )}
-        <ul>
-          {turnByTurnInstructions.length > 0 &&
-            turnByTurnInstructions.map((instruction, index) => (
-              <li key={index}>{instruction}</li>
-            ))}
-        </ul>
-      </div>
+          {disDur.distance !== 0 && <p>Distance: {disDur.distance} meters</p>}
+          {disDur.duration !== 0 && (
+            <p>Duration: {formatTime(disDur.duration)}</p>
+          )}
+          <ul>
+            {turnByTurnInstructions.length > 0 &&
+              turnByTurnInstructions.map((instruction, index) => (
+                <li key={index}>{instruction}</li>
+              ))}
+          </ul>
+        </div>
+      )}
       <select
         id="selectOptions"
         value={profile}
