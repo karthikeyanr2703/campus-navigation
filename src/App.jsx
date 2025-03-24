@@ -87,7 +87,7 @@ const App = () => {
       console.log(error.message, "👌");
     }
   };
-  let getRouteThrottled = useThrottle(getRoute, 1900);
+  let getRouteThrottled = useThrottle(getRoute, 5000);
 
   useEffect(() => {
     if (startCoordinate && endCoordinate) {
