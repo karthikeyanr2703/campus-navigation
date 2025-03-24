@@ -9,7 +9,7 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css"; // See notes below
 import "./App.css";
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import _ from "lodash";
 
 const App = () => {
@@ -20,6 +20,8 @@ const App = () => {
   const [turnByTurnInstructions, setTurnByTurnInstructions] = useState([]);
   const [profile, setProfile] = useState("driving-car");
   const [userLocation, setUserLocation] = useState(null);
+  // console.log(startCoordinate, endCoordinate);
+
   const [disDur, setDisDur] = useState({
     distance: 0,
     duration: 0,
@@ -40,7 +42,7 @@ const App = () => {
         {
           enableHighAccuracy: true,
           timeout: 60000,
-          maximumAge: 3900,
+          maximumAge: 1000,
         }
       );
     } else {
@@ -53,43 +55,43 @@ const App = () => {
       }
     };
   }, [liveRouting]);
-  const getRouteThrottled = useCallback(
-    _.throttle(async () => {
-      const apiKey = "5b3ce3597851110001cf62487bd10ff850434c58ac7c2d99a5bf9ed1";
-      const url = `https://api.openrouteservice.org/v2/directions/${profile}/geojson`;
 
-      const body = {
-        coordinates: [
-          liveRouting ? userLocation : startCoordinate,
-          endCoordinate,
-        ],
-      };
-      try {
-        const response = await axios.post(url, body, {
-          headers: {
-            Authorization: apiKey,
-            "Content-Type": "application/json",
-          },
-        });
-        let route = response.data;
-        console.log(route);
+  let getRoute = async () => {
+    const apiKey = "5b3ce3597851110001cf62487bd10ff850434c58ac7c2d99a5bf9ed1";
+    const url = `https://api.openrouteservice.org/v2/directions/${profile}/geojson`;
+    const body = {
+      coordinates: [
+        liveRouting ? userLocation : startCoordinate,
+        endCoordinate,
+      ],
+    };
+    try {
+      const response = await axios.post(url, body, {
+        headers: {
+          Authorization: apiKey,
+          "Content-Type": "application/json",
+        },
+      });
 
-        const { distance, duration } = route.features[0].properties.segments[0];
-        setRouteData(route);
-        setDisDur({ distance, duration });
-        const instructions = route.features[0].properties.segments[0].steps.map(
-          (step) => step.instruction
-        );
-        setTurnByTurnInstructions(instructions);
-      } catch (error) {
-        console.log("error", "🔥");
-        console.log(error.message, "👌");
-      }
-    }, 4200),
-    []
-  );
+      let route = response.data;
+      console.log(route);
+      const { distance, duration } = route.features[0].properties.segments[0];
+      setRouteData(route);
+      setDisDur({ distance, duration });
+      const instructions = route.features[0].properties.segments[0].steps.map(
+        (step) => step.instruction
+      );
+      setTurnByTurnInstructions(instructions);
+    } catch (error) {
+      console.log("error", "🔥");
+      console.log(error.message, "👌");
+    }
+  };
+  const getRouteThrottled = _.throttle(getRoute, 1500);
+
   useEffect(() => {
     if (startCoordinate && endCoordinate) {
+      console.log("start and end");
       getRouteThrottled();
     }
     if (liveRouting && userLocation && endCoordinate) {
@@ -145,6 +147,9 @@ const App = () => {
         mapStyle="https://tiles.openfreemap.org/styles/liberty"
         onClick={handleMapClick}
       >
+        <button id="liveRButt" onClick={toggleLiveRouting}>
+          {liveRouting ? "Stop Live Routing" : "Start Live Routing"}
+        </button>
         <GeolocateControl
           positionOptions={{
             enableHighAccuracy: true,
@@ -233,9 +238,8 @@ const App = () => {
         )}
       </Map>
       <div className="instructions">
-        <h2>Instructions</h2>
+        <h2>Details</h2>
 
-        <p>Click on the map to select the starting and ending points.</p>
         {disDur.distance !== 0 && <p>Distance: {disDur.distance} meters</p>}
         {disDur.duration !== 0 && (
           <p>Duration: {formatTime(disDur.duration)}</p>
@@ -257,9 +261,6 @@ const App = () => {
         <option value="cycling-electric">⚡ Electric Bike</option>
         <option value="foot-walking">🚶 Walking</option>
       </select>
-      <button id="liveRButt" onClick={toggleLiveRouting}>
-        {liveRouting ? "Stop Live Routing" : "Start Live Routing"}
-      </button>
     </div>
   );
 };

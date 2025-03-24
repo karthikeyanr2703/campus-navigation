@@ -1,11 +1,12 @@
 .app {
-  background-color: rgb(255, 255, 255);
+  background-color: whitesmoke;
   width: 100vw;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: sans-serif;
+  padding-top: 20px;
 }
 
 .app #mainMap {
@@ -24,9 +25,8 @@
   right: 30px;
   top: 90px;
   width: 300px;
-  border: 2px solid black;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   padding: 10px;
-  border-radius: 10px;
 }
 .app .instructions h2 {
   font-size: 30px;
@@ -54,9 +54,16 @@
   border: 2px solid black;
 }
 #liveRButt {
-  position: absolute;
-  left: 10px;
-  bottom: 50px;
+  position: absolute!important;
+  left: 5px;
+  bottom: 5px;
+  padding: 8px 5px;
+  font-size: 10px;
+  background-color: white;
+  outline: 0;
+  border: 0;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.493);
+  cursor: pointer;
 }
 @media (max-width: 500px) {
   .app #mainMap {
@@ -68,24 +75,28 @@
   }
   .app .instructions {
     width: 320px !important;
-    height: fit-content;
+    height: 200px;
+    overflow-y: auto;
     position: absolute;
     left: 50%;
-    top: 400px;
+    top: 370px;
     transform: translateX(-50%);
     width: 300px;
-    border: 2px solid black;
     padding: 10px;
-    border-radius: 10px;
   }
   .app #selectOptions {
     width: 200px;
     padding: 8px;
     position: absolute;
     left: 50%;
-    top: 330px;
+    top: 320px;
     transform: translateX(-50%);
     border-radius: 10px;
     border: 2px solid black;
+  }
+  #liveRButt {
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
   }
 }
