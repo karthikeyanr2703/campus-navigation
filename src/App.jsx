@@ -9,23 +9,24 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css"; // See notes below
 import "./App.css";
 import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import _ from "lodash";
+import useThrottle from "./useThrottle";
 
 const App = () => {
   const [routeData, setRouteData] = useState(null);
   const [startCoordinate, setStartCoordinate] = useState(null);
   const [endCoordinate, setEndCoordinate] = useState(null);
-  const [type, setType] = useState(null);
   const [turnByTurnInstructions, setTurnByTurnInstructions] = useState([]);
   const [profile, setProfile] = useState("driving-car");
   const [userLocation, setUserLocation] = useState(null);
-  // console.log(startCoordinate, endCoordinate);
 
   const [disDur, setDisDur] = useState({
     distance: 0,
     duration: 0,
   });
+  console.log("hello");
+
   const [liveRouting, setLiveRouting] = useState(false);
 
   useEffect(() => {
@@ -48,7 +49,6 @@ const App = () => {
     } else {
       console.log("Geolocation is not supported by this browser");
     }
-
     return () => {
       if (watchId && typeof watchId === "number") {
         navigator.geolocation.clearWatch(watchId);
@@ -56,7 +56,7 @@ const App = () => {
     };
   }, [liveRouting]);
 
-  let getRoute = useCallback(async () => {
+  let getRoute = async () => {
     const apiKey = "5b3ce3597851110001cf62487bd10ff850434c58ac7c2d99a5bf9ed1";
     const url = `https://api.openrouteservice.org/v2/directions/${profile}/geojson`;
     const body = {
@@ -86,8 +86,8 @@ const App = () => {
       console.log("error", "🔥");
       console.log(error.message, "👌");
     }
-  }, []);
-  const getRouteThrottled = useMemo(() => _.throttle(getRoute, 2500), []);
+  };
+  let getRouteThrottled = useThrottle(getRoute, 1900);
 
   useEffect(() => {
     if (startCoordinate && endCoordinate) {
@@ -102,12 +102,10 @@ const App = () => {
   const handleMapClick = (e) => {
     const clickedLngLat = e.lngLat;
     if (!liveRouting) {
-      if (!type) {
+      if (!startCoordinate) {
         setStartCoordinate([clickedLngLat.lng, clickedLngLat.lat]);
-        setType("start");
-      } else if (type === "start") {
+      } else if (!endCoordinate) {
         setEndCoordinate([clickedLngLat.lng, clickedLngLat.lat]);
-        setType("end");
       }
     } else if (liveRouting) {
       setEndCoordinate([clickedLngLat.lng, clickedLngLat.lat]);
@@ -126,7 +124,6 @@ const App = () => {
     setStartCoordinate(null);
     setEndCoordinate(null);
     setRouteData(null);
-    setType(null);
     setTurnByTurnInstructions([]);
     setLiveRouting((prev) => !prev);
     setDisDur({
