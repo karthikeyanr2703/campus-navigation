@@ -42,7 +42,7 @@ const App = () => {
         {
           enableHighAccuracy: true,
           timeout: 60000,
-          maximumAge: 1000,
+          maximumAge: 2500,
         }
       );
     } else {
@@ -87,7 +87,7 @@ const App = () => {
       console.log(error.message, "👌");
     }
   };
-  const getRouteThrottled = _.throttle(getRoute, 1500);
+  const getRouteThrottled = _.throttle(getRoute, 2500);
 
   useEffect(() => {
     if (startCoordinate && endCoordinate) {
