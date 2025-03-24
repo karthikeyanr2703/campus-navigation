@@ -9,7 +9,7 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css"; // See notes below
 import "./App.css";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import _ from "lodash";
 
 const App = () => {
@@ -56,7 +56,7 @@ const App = () => {
     };
   }, [liveRouting]);
 
-  let getRoute = async () => {
+  let getRoute = useCallback(async () => {
     const apiKey = "5b3ce3597851110001cf62487bd10ff850434c58ac7c2d99a5bf9ed1";
     const url = `https://api.openrouteservice.org/v2/directions/${profile}/geojson`;
     const body = {
@@ -86,8 +86,8 @@ const App = () => {
       console.log("error", "🔥");
       console.log(error.message, "👌");
     }
-  };
-  const getRouteThrottled = _.throttle(getRoute, 2500);
+  }, []);
+  const getRouteThrottled = useMemo(() => _.throttle(getRoute, 2500), []);
 
   useEffect(() => {
     if (startCoordinate && endCoordinate) {
