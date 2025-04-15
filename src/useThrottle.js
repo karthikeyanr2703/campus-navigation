@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from "react";
 
 const useThrottle = (callback, delay) => {
   let [args, setArgs] = useState(null);
-  let lastExecuted = useRef(Date.now());
+  let lastExecuted = useRef(0);
   let timeoutRef = useRef(null);
-  console.log(lastExecuted, "first");
+
   useEffect(() => {
     if (!args) return;
     const now = Date.now();
-    console.log(now, "second");
+
     const timeSinceLastExe = now - lastExecuted.current;
     if (timeSinceLastExe >= delay) {
       lastExecuted.current = now;

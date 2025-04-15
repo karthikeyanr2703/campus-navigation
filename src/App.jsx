@@ -5,6 +5,7 @@ import {
   Marker,
   NavigationControl,
   Source,
+  Popup,
 } from "@vis.gl/react-maplibre";
 import "maplibre-gl/dist/maplibre-gl.css"; // See notes below
 import "./App.css";
@@ -12,6 +13,59 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import _ from "lodash";
 import useThrottle from "./useThrottle";
+const customMarkers = [
+  {
+    id: 1,
+    coordinates: [79.121005, 12.8804115],
+    popupContent: "Admin Block",
+    popupImg: "https://tpgit.edu.in/wp-content/uploads/2014/06/main.jpg",
+  },
+  {
+    id: 2,
+    coordinates: [79.1218274, 12.8803582],
+    popupContent: "Library and Media Center",
+    popupImg:
+      "https://s6.ezgif.com/tmp/ffffff-ezgif-6bda5fd24bfea-gif-jpg/frame_5_delay-2s.jpg",
+  },
+  {
+    id: 3,
+    coordinates: [79.1210862, 12.8797043],
+    popupContent: "Mechanical Block",
+    popupImg: "https://tpgit.edu.in/wp-content/uploads/2014/03/mech.jpg",
+  },
+  {
+    id: 4,
+    coordinates: [79.1210604, 12.8808817],
+    popupContent: "Civil Block",
+    popupImg: "https://tpgit.edu.in/wp-content/uploads/2014/03/civil.jpg",
+  },
+  {
+    id: 5,
+    coordinates: [79.1217879, 12.8808319],
+    popupContent: "Computer Science and Electrical Blocks",
+    popupImg:
+      "https://tpgit.edu.in/wp-content/uploads/2025/03/IMG20230616080908-scaled.jpg",
+  },
+  {
+    id: 6,
+    coordinates: [79.1221363, 12.8797383],
+    popupContent: "Placement Cell",
+    popupImg:
+      "https://s6.ezgif.com/tmp/ffffff-ezgif-6bda5fd24bfea-gif-jpg/frame_7_delay-2s.jpg",
+  },
+  {
+    id: 7,
+    coordinates: [79.1223266, 12.8790983],
+    popupContent: "Electronics and Communication Block",
+    popupImg: "https://tpgit.edu.in/wp-content/uploads/2014/03/ece.jpg",
+  },
+  {
+    id: 8,
+    coordinates: [79.1224113, 12.880211],
+    popupContent: "MCA",
+    popupImg: "https://tpgit.edu.in/wp-content/uploads/2014/03/mca.jpg",
+  },
+];
 
 const App = () => {
   const [routeData, setRouteData] = useState(null);
@@ -20,12 +74,12 @@ const App = () => {
   const [turnByTurnInstructions, setTurnByTurnInstructions] = useState([]);
   const [profile, setProfile] = useState("driving-car");
   const [userLocation, setUserLocation] = useState(null);
+  const [hoveredMarker, setHoveredMarker] = useState(null);
 
   const [disDur, setDisDur] = useState({
     distance: 0,
     duration: 0,
   });
-  console.log("hello");
 
   const [liveRouting, setLiveRouting] = useState(false);
 
@@ -38,7 +92,7 @@ const App = () => {
           setUserLocation([longitude, latitude]);
         },
         (error) => {
-          console.log(error.message, "😁");
+          console.log(error.message);
         },
         {
           enableHighAccuracy: true,
@@ -74,7 +128,7 @@ const App = () => {
       });
 
       let route = response.data;
-      console.log(route);
+
       const { distance, duration } = route.features[0].properties.segments[0];
       setRouteData(route);
       setDisDur({ distance, duration });
@@ -83,15 +137,13 @@ const App = () => {
       );
       setTurnByTurnInstructions(instructions);
     } catch (error) {
-      console.log("error", "🔥");
-      console.log(error.message, "👌");
+      console.log(error.message);
     }
   };
   let getRouteThrottled = useThrottle(getRoute, 6000);
 
   useEffect(() => {
     if (startCoordinate && endCoordinate) {
-      console.log("start and end");
       getRouteThrottled();
     }
     if (liveRouting && userLocation && endCoordinate) {
@@ -100,6 +152,7 @@ const App = () => {
   }, [endCoordinate, startCoordinate, profile, userLocation, liveRouting]);
 
   const handleMapClick = (e) => {
+    setHoveredMarker(null);
     const clickedLngLat = e.lngLat;
     if (!liveRouting) {
       if (!startCoordinate) {
@@ -144,6 +197,57 @@ const App = () => {
         mapStyle="https://tiles.openfreemap.org/styles/liberty"
         onClick={handleMapClick}
       >
+        {customMarkers.map((marker) => (
+          <Marker
+            key={marker.id}
+            longitude={marker.coordinates[0]}
+            latitude={marker.coordinates[1]}
+            anchor="bottom"
+          >
+            <img
+              src="/images/blueMarker.png"
+              alt={`Custom Marker ${marker.id}`}
+              style={{
+                width: "30px",
+                height: "30px",
+                objectFit: "contain",
+                objectPosition: "center",
+                cursor: "pointer",
+              }}
+              // onMouseEnter={() => {
+              //   console.log(marker.id);
+
+              //   setHoveredMarker(marker.id);
+              // }}
+              // onMouseLeave={() => setHoveredMarker(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+
+                setHoveredMarker(marker.id);
+              }}
+            />
+            {hoveredMarker === marker.id && (
+              <Popup
+                longitude={marker.coordinates[0]}
+                latitude={marker.coordinates[1]}
+                closeButton={false}
+                closeOnClick={false}
+                anchor="top"
+              >
+                <div className="popup-content">
+                  <img
+                    src={marker.popupImg}
+                    alt="popupImg"
+                    className="popupImg"
+                  />
+
+                  <h3> {marker.popupContent}</h3>
+                </div>
+              </Popup>
+            )}
+          </Marker>
+        ))}
+
         <button id="liveRButt" onClick={toggleLiveRouting}>
           {liveRouting ? "Stop Live Routing" : "Start Live Routing"}
         </button>
