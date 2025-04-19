@@ -272,7 +272,7 @@ const App = () => {
               }
             }}
           >
-            <option value="">Select a destination...</option>
+            <option value="">Select destination</option>
             {customMarkers.map((marker) => (
               <option key={marker.id} value={marker.id}>
                 {marker.popupContent}
