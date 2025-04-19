@@ -1,5 +1,5 @@
 .app {
-  background-color: whitesmoke;
+  background-color: rgb(0, 0, 0);
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -90,8 +90,8 @@
 }
 @media (max-width: 500px) {
   .app #mainMap {
-    width: 300px !important;
-    height: 300px !important;
+    width: 400px !important;
+    height: 400px !important;
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
@@ -102,7 +102,7 @@
     overflow-y: auto;
     position: absolute;
     left: 50%;
-    top: 370px;
+    top: 530px;
     transform: translateX(-50%);
     width: 300px;
     padding: 10px;
@@ -112,7 +112,7 @@
     padding: 8px;
     position: absolute;
     left: 50%;
-    top: 320px;
+    top: 450px;
     transform: translateX(-50%);
     border-radius: 10px;
     border: 2px solid black;
