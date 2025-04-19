@@ -78,6 +78,16 @@
   object-fit: cover;
   object-position: center;
 }
+#placeSelect {
+  width: 120px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 5px;
+  border-radius: 8px;
+}
 @media (max-width: 500px) {
   .app #mainMap {
     width: 300px !important;

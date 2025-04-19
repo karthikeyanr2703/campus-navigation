@@ -24,8 +24,7 @@ const customMarkers = [
     id: 2,
     coordinates: [79.1218274, 12.8803582],
     popupContent: "Library and Media Center",
-    popupImg:
-      "https://s6.ezgif.com/tmp/ffffff-ezgif-6bda5fd24bfea-gif-jpg/frame_5_delay-2s.jpg",
+    popupImg: "/images/library.jpg",
   },
   {
     id: 3,
@@ -50,8 +49,7 @@ const customMarkers = [
     id: 6,
     coordinates: [79.1221363, 12.8797383],
     popupContent: "Placement Cell",
-    popupImg:
-      "https://s6.ezgif.com/tmp/ffffff-ezgif-6bda5fd24bfea-gif-jpg/frame_7_delay-2s.jpg",
+    popupImg: "/images/placement.jpeg",
   },
   {
     id: 7,
@@ -65,6 +63,18 @@ const customMarkers = [
     popupContent: "MCA",
     popupImg: "https://tpgit.edu.in/wp-content/uploads/2014/03/mca.jpg",
   },
+  {
+    id: 9,
+    coordinates: [79.122405, 12.8795205],
+    popupContent: "Green Canteen",
+    popupImg: "/images/greenCanteen.jpeg",
+  },
+  {
+    id: 10,
+    coordinates: [79.122555, 12.8798605],
+    popupContent: "Aavin Canteen",
+    popupImg: "/images/aavin.jpeg",
+  },
 ];
 
 const App = () => {
@@ -76,7 +86,7 @@ const App = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [hoveredMarker, setHoveredMarker] = useState(null);
   const [selectedPlace, setSelectedPlace] = useState("");
-
+  const [successMsg, setSuccessMsg] = useState("");
   const [disDur, setDisDur] = useState({
     distance: 0,
     duration: 0,
@@ -209,8 +219,8 @@ const App = () => {
               src="/images/blueMarker.png"
               alt={`Custom Marker ${marker.id}`}
               style={{
-                width: "30px",
-                height: "30px",
+                width: "20px",
+                height: "20px",
                 objectFit: "contain",
                 objectPosition: "center",
                 cursor: "pointer",
@@ -260,14 +270,6 @@ const App = () => {
               if (place) {
                 setEndCoordinate(place.coordinates);
               }
-            }}
-            style={{
-              position: "absolute",
-              top: "70px",
-              left: "10px",
-              zIndex: 1000,
-              padding: "8px",
-              borderRadius: "8px",
             }}
           >
             <option value="">Select a destination...</option>
@@ -369,11 +371,14 @@ const App = () => {
       {turnByTurnInstructions.length > 0 && (
         <div className="instructions">
           <h2>Details</h2>
-
+          {disDur.duration === 0 && disDur.distance === 0 && (
+            <h3>Reached your destination👍🏽</h3>
+          )}
           {disDur.distance !== 0 && <p>Distance: {disDur.distance} meters</p>}
           {disDur.duration !== 0 && (
             <p>Duration: {formatTime(disDur.duration)}</p>
           )}
+
           <ul>
             {turnByTurnInstructions.length > 0 &&
               turnByTurnInstructions.map((instruction, index) => (
