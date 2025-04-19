@@ -75,6 +75,7 @@ const App = () => {
   const [profile, setProfile] = useState("driving-car");
   const [userLocation, setUserLocation] = useState(null);
   const [hoveredMarker, setHoveredMarker] = useState(null);
+  const [selectedPlace, setSelectedPlace] = useState("");
 
   const [disDur, setDisDur] = useState({
     distance: 0,
@@ -214,12 +215,6 @@ const App = () => {
                 objectPosition: "center",
                 cursor: "pointer",
               }}
-              // onMouseEnter={() => {
-              //   console.log(marker.id);
-
-              //   setHoveredMarker(marker.id);
-              // }}
-              // onMouseLeave={() => setHoveredMarker(null)}
               onClick={(e) => {
                 e.stopPropagation();
 
@@ -251,6 +246,39 @@ const App = () => {
         <button id="liveRButt" onClick={toggleLiveRouting}>
           {liveRouting ? "Stop Live Routing" : "Start Live Routing"}
         </button>
+        {liveRouting && userLocation && (
+          <select
+            id="placeSelect"
+            value={selectedPlace}
+            onChange={(e) => {
+              const selectedId = parseInt(e.target.value);
+              setSelectedPlace(selectedId);
+
+              const place = customMarkers.find(
+                (marker) => marker.id === selectedId
+              );
+              if (place) {
+                setEndCoordinate(place.coordinates);
+              }
+            }}
+            style={{
+              position: "absolute",
+              top: "70px",
+              left: "10px",
+              zIndex: 1000,
+              padding: "8px",
+              borderRadius: "8px",
+            }}
+          >
+            <option value="">Select a destination...</option>
+            {customMarkers.map((marker) => (
+              <option key={marker.id} value={marker.id}>
+                {marker.popupContent}
+              </option>
+            ))}
+          </select>
+        )}
+
         <GeolocateControl
           positionOptions={{
             enableHighAccuracy: true,
