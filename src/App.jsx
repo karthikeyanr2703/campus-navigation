@@ -86,7 +86,6 @@ const App = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [hoveredMarker, setHoveredMarker] = useState(null);
   const [selectedPlace, setSelectedPlace] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   const [disDur, setDisDur] = useState({
     distance: 0,
     duration: 0,
